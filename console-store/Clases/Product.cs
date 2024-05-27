@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace console_store.Clases
+namespace ConsoleStore.Clases
 {
     internal class Product
     {     
-        public required int id { get; set; }
-        public required string name { get; set; } = string.Empty;
+        public required int Id { get; set; }
+        public required string Name { get; set; } = string.Empty;
 
     }
 }

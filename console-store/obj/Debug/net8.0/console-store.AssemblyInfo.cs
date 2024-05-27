@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("console-store")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+335d0883e061c7572ac7ce791c469f8fc44bf30f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+757a7106c7710838d8356d872497201b967d28e3")]
 [assembly: System.Reflection.AssemblyProductAttribute("console-store")]
 [assembly: System.Reflection.AssemblyTitleAttribute("console-store")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,31 +1,30 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using console_store.Clases;
+using ConsoleStore.Clases;
 using System.Collections.Generic;
 
 Console.WriteLine("Hello, World!");
 
 List<Product> products = new List<Product>();
 
-Boolean programWork = true;
+var programWork = true;
 
 while(programWork)
 { 
-
     Console.WriteLine("Select action");
     Console.WriteLine("1 - List of products");
     Console.WriteLine("2 - Add product");
     Console.WriteLine("Any button - Exit");
 
-    string inputKey = Console.ReadLine();
-    string inputValue = inputKey.ToString();
+    string inputKey = Console.ReadLine().ToString();
 
-   switch(inputValue)
+   switch(inputKey)
     {
         case "1":
             { 
-                for(int i = 0;i< products.Count;i++)
+
+                foreach(Product product in products)
                 {
-                    Console.WriteLine("Id: " + products[i].id + " name: " + products[i].name);
+                    Console.WriteLine("Id: " + product.Id + " name: " + product.Name);
                 }
 
                 Console.WriteLine("Number of procuts " + products.Count);
@@ -36,7 +35,7 @@ while(programWork)
 
                 string nameOfProduct = Console.ReadLine();
 
-                products.Add(new Product { id = products.Count + 1, name = nameOfProduct });
+                products.Add(new Product { Id = products.Count + 1, Name = nameOfProduct });
             } break;
         default:
             {
