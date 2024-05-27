@@ -1,6 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-using ConsoleStore.Clases;
-using System.Collections.Generic;
+﻿using ConsoleStore.Clases;
 
 Console.WriteLine("Hello, World!");
 
@@ -20,22 +18,12 @@ while(programWork)
    switch(inputKey)
     {
         case "1":
-            { 
-
-                foreach(Product product in products)
-                {
-                    Console.WriteLine("Id: " + product.Id + " name: " + product.Name);
-                }
-
-                Console.WriteLine("Number of procuts " + products.Count);
+            {
+                PrintListOfProducts();
             } break;
         case "2":
             {
-                Console.WriteLine("Enter name of product");
-
-                string nameOfProduct = Console.ReadLine();
-
-                products.Add(new Product { Id = products.Count + 1, Name = nameOfProduct });
+                CreateNewProduct();
             } break;
         default:
             {
@@ -44,4 +32,24 @@ while(programWork)
     }
 
     Console.WriteLine("==========================");
+}
+
+void PrintListOfProducts()
+{
+
+    foreach(Product product in products)
+    {
+        Console.WriteLine("Id: " + product.Id + " name: " + product.Name);
+    }
+
+    Console.WriteLine("Number of procuts " + products.Count);
+}
+
+void CreateNewProduct()
+{
+    Console.WriteLine("Enter name of product");
+
+    string nameOfProduct = Console.ReadLine();
+
+    products.Add(new Product { Id = products.Count + 1, Name = nameOfProduct });
 }
