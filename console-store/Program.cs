@@ -2,54 +2,32 @@
 
 Console.WriteLine("Hello, World!");
 
-List<Product> products = new List<Product>();
+Store store = new Store();
 
 var programWork = true;
 
-while(programWork)
-{ 
-    Console.WriteLine("Select action");
-    Console.WriteLine("1 - List of products");
-    Console.WriteLine("2 - Add product");
-    Console.WriteLine("Any button - Exit");
+while (programWork)
+{
+    string inputKey = store.SelectAction();
 
-    string inputKey = Console.ReadLine().ToString();
-
-   switch(inputKey)
+    switch (inputKey)
     {
         case "1":
             {
-                PrintListOfProducts();
-            } break;
+                store.PrintListOfProducts();
+            }
+            break;
         case "2":
             {
-                CreateNewProduct();
-            } break;
+                store.CreateNewProduct();
+            }
+            break;
         default:
             {
                 programWork = false;
-            } break;
+            }
+            break;
     }
 
     Console.WriteLine("==========================");
-}
-
-void PrintListOfProducts()
-{
-
-    foreach(Product product in products)
-    {
-        Console.WriteLine("Id: " + product.Id + " name: " + product.Name);
-    }
-
-    Console.WriteLine("Number of procuts " + products.Count);
-}
-
-void CreateNewProduct()
-{
-    Console.WriteLine("Enter name of product");
-
-    string nameOfProduct = Console.ReadLine();
-
-    products.Add(new Product { Id = products.Count + 1, Name = nameOfProduct });
 }

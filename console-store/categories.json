@@ -1,0 +1,17 @@
+[
+  {
+    "Id": 1,
+    "Name": "Mobile phone",
+    "Description": ""
+  },
+  {
+    "Id": 2,
+    "Name": "PC",
+    "Description": ""
+  },
+  {
+    "Id": 3,
+    "Name": "Accessories",
+    "Description": ""
+  }
+]
