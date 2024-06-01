@@ -32,9 +32,16 @@ namespace ConsoleStore.Clases
 
             List<Category> categories = this._server.GetListOfCategories();
 
-            foreach (var category in categories)
+            if (categories.Count > 0)
             {
-                Console.WriteLine("ID: " + category.Id + " Name: " + category.Name);
+                foreach (var category in categories)
+                {
+                    Console.WriteLine("ID: " + category.Id + " Name: " + category.Name);
+                }
+            }
+            else
+            {
+                Console.WriteLine("The category list is empty");
             }
         }
 
@@ -44,65 +51,68 @@ namespace ConsoleStore.Clases
 
             string nameOfProduct = Console.ReadLine();
 
-            this._server.CreateNewProduct(new Dto.NewProduct
+            Product product = this._server.CreateNewProduct(new Dto.NewProduct
             {
                 Name = new string(nameOfProduct)
             });
 
 
-            //this.CallMenuSelectCategoryForProduct(productId);
+            this.CallMenuSelectCategoryForProduct(product.Id);
         }
 
-        //public void CallMenuSelectCategoryForProduct(int productId)
-        //{
-        //    Console.WriteLine("Do you want to select a category for the product?");
-        //    Console.WriteLine("Y - YES");
-        //    Console.WriteLine("N - NO");
-        //    Console.WriteLine("Any button - SKIP");
+        public void CallMenuSelectCategoryForProduct(int productId)
+        {
+            Console.WriteLine("Do you want to select a category for the product?");
+            Console.WriteLine("Y - YES");
+            Console.WriteLine("N - NO");
+            Console.WriteLine("Any button - SKIP");
 
-        //    string inputKey = Console.ReadLine().ToString();
+            string inputKey = Console.ReadLine().ToString();
 
-        //    switch (inputKey)
-        //    {
-        //        case "Y":
-        //            {
-        //                this.ShowListOfCategories();
+            switch (inputKey)
+            {
+                case "Y":
+                    {
+                        this.ShowListOfCategories();
 
-        //                Console.WriteLine("Enter category ID:");
+                        Console.WriteLine("Enter category ID:");
 
-        //                try
-        //                {
-        //                    int categoryId = int.Parse(Console.ReadLine());
+                        try
+                        {
+                            int categoryId = int.Parse(Console.ReadLine());
 
-        //                    this.AddCategoryToProduct(productId, categoryId);
-        //                }
-        //                catch (FormatException error)
-        //                {
-        //                    Console.WriteLine("Input was not a valid number. Please enter a valid integer.");
-        //                }
-        //            }
-        //            break;
-        //        case "N": break;
-        //        default: break;
-        //    }
-        //}
+                            this.AddCategoryToProduct(productId, categoryId);
+                        }
+                        catch (FormatException error)
+                        {
+                            Console.WriteLine("Input was not a valid number. Please enter a valid integer.");
+                        }
+                    }
+                    break;
+                case "N": break;
+                default: break;
+            }
+        }
 
-        //public void AddCategoryToProduct(int productId, int categoryId)
-        //{
-        //    Product? product = _products.Find(p => p.Id == productId);
-        //    Category? category = _categories.Find(c => c.Id == categoryId);
+        public void AddCategoryToProduct(int productId, int categoryId)
+        {
+            List<Category> categories = this._server.GetListOfCategories();
+            List<Product> products = this._server.GetListOfProducts();
 
-        //    if (product != null && category != null)
-        //    {
-        //        product.CategoryId = categoryId;
-        //        product.Category = category;
-        //        Console.WriteLine($"Product {product.Name}'s category updated to {categoryId}");
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine($"Product with ID {productId} not found.");
-        //    }
-        //}
+            Product? product = products.Find(p => p.Id == productId);
+            Category? category = categories.Find(c => c.Id == categoryId);
+
+            if (product != null && category != null)
+            {
+                product.CategoryId = categoryId;
+                product.Category = category;
+                Console.WriteLine($"Product {product.Name}'s category updated to {categoryId}");
+            }
+            else
+            {
+                Console.WriteLine($"Product with ID {productId} not found.");
+            }
+        }
 
     }
 }

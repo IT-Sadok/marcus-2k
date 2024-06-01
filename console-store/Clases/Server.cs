@@ -6,7 +6,7 @@ namespace ConsoleStore.Clases
     public class Server
     {
 
-        private List<Category> _categories = new List<Category>(JsonSerializer.Deserialize<List<Category>>(File.ReadAllText("../../../categories.json")));
+        private List<Category> _categories = new List<Category>(JsonSerializer.Deserialize<List<Category>>(File.ReadAllText("categories.json")));
         private List<Product> _products = new List<Product>();
 
         public List<Category> GetListOfCategories()
@@ -24,13 +24,16 @@ namespace ConsoleStore.Clases
             return this._products.Count + 1;
         }
 
-        public void CreateNewProduct(NewProduct body)
+        public Product CreateNewProduct(NewProduct body)
         {
             int productId = this.GetNewProductId();
 
-            this._products.Add(new Product { Id = productId, Name = body.Name, CategoryId = null });
+            Product partialProduct = new Product { Id = productId, Name = body.Name, CategoryId = null };
 
-            //this.CallMenuSelectCategoryForProduct(productId);
+            this._products.Add(partialProduct);
+
+
+            return partialProduct;
         }
 
 
