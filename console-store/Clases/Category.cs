@@ -1,6 +1,6 @@
 ﻿namespace ConsoleStore.Clases
 {
-    internal class Category
+    public class Category
     {
         public required int Id { get; set; }
 

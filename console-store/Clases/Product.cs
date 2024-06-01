@@ -1,7 +1,7 @@
 ﻿
 namespace ConsoleStore.Clases
 {
-    internal class Product
+    public class Product
     {
         public required int Id { get; set; }
 

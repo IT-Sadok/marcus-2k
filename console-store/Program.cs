@@ -2,24 +2,24 @@
 
 Console.WriteLine("Hello, World!");
 
-Store store = new Store();
+Web web = new Web();
 
 var programWork = true;
 
 while (programWork)
 {
-    string inputKey = store.SelectAction();
+    string inputKey = web.SelectAction();
 
     switch (inputKey)
     {
         case "1":
             {
-                store.PrintListOfProducts();
+                web.ShowListOfProducts();
             }
             break;
         case "2":
             {
-                store.CreateNewProduct();
+                web.CreateNewProduct();
             }
             break;
         default:
