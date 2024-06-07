@@ -1,4 +1,4 @@
-﻿using ConsoleStore.Clases;
+﻿using ConsoleStore.Classes;
 
 Console.WriteLine("Hello, World!");
 

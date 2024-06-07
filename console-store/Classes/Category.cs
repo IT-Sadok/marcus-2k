@@ -1,4 +1,4 @@
-﻿namespace ConsoleStore.Clases
+﻿namespace ConsoleStore.Classes
 {
     public class Category
     {

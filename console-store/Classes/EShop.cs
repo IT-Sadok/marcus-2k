@@ -1,17 +1,21 @@
 ﻿using System.Text.Json;
-using ConsoleStore.Clases.Dto;
+using ConsoleStore.Classes.Dto;
+using System;
+using System.Collections.Generic;
 
-namespace ConsoleStore.Clases
+namespace ConsoleStore.Classes
 {
-    public class Server
+    public class EShop
     {
 
-        private List<Category> _categories = new List<Category>(JsonSerializer.Deserialize<List<Category>>(File.ReadAllText("categories.json")));
+        //private List<Category> _categories = new List<Category>(JsonSerializer.Deserialize<List<Category>>(File.ReadAllText("categories.json")));
+        private FileManager FileManager = new FileManager();
+
         private List<Product> _products = new List<Product>();
 
         public List<Category> GetListOfCategories()
         {
-            return this._categories;
+            return this.FileManager.GetListOfCategories();
         }
 
         public List<Product> GetListOfProducts()
@@ -37,21 +41,29 @@ namespace ConsoleStore.Clases
         }
 
 
-        public void AddCategoryToProduct(int productId, int categoryId)
+        public InformationRes AddCategoryToProduct(int productId, int categoryId)
         {
             Product? product = _products.Find(p => p.Id == productId);
-            Category? category = _categories.Find(c => c.Id == categoryId);
+            Category? category = this.GetListOfCategories().Find(c => c.Id == categoryId);
 
             if (product != null && category != null)
             {
                 product.CategoryId = categoryId;
                 product.Category = category;
-                Console.WriteLine($"Product {product.Name}'s category updated to {categoryId}");
+
+                return new InformationRes
+                {
+                    Product = product,
+                    Message = $"Product {product.Name}'s category updated to {categoryId}"
+                };
             }
-            else
+
+
+            return new InformationRes
             {
-                Console.WriteLine($"Product with ID {productId} not found.");
-            }
+                Product = null,
+                Message = $"Product with ID {productId} not found."
+            };
         }
     }
 }

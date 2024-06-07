@@ -1,5 +1,5 @@
 ﻿
-namespace ConsoleStore.Clases
+namespace ConsoleStore.Classes
 {
     public class Product
     {

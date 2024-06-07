@@ -1,9 +1,11 @@
 ﻿
-namespace ConsoleStore.Clases
+
+
+namespace ConsoleStore.Classes
 {
     public class Web
     {
-        private Server _server = new Server();
+        private EShop _eshop = new EShop();
 
         public string SelectAction()
         {
@@ -17,7 +19,7 @@ namespace ConsoleStore.Clases
 
         public void ShowListOfProducts()
         {
-            List<Product> products = this._server.GetListOfProducts();
+            List<Product> products = _eshop.GetListOfProducts();
 
             foreach (Product product in products)
             {
@@ -30,7 +32,7 @@ namespace ConsoleStore.Clases
         public void ShowListOfCategories()
         {
 
-            List<Category> categories = this._server.GetListOfCategories();
+            List<Category> categories = _eshop.GetListOfCategories();
 
             if (categories.Count > 0)
             {
@@ -51,7 +53,7 @@ namespace ConsoleStore.Clases
 
             string nameOfProduct = Console.ReadLine();
 
-            Product product = this._server.CreateNewProduct(new Dto.NewProduct
+            Product product = _eshop.CreateNewProduct(new Dto.NewProduct
             {
                 Name = new string(nameOfProduct)
             });
@@ -96,8 +98,8 @@ namespace ConsoleStore.Clases
 
         public void AddCategoryToProduct(int productId, int categoryId)
         {
-            List<Category> categories = this._server.GetListOfCategories();
-            List<Product> products = this._server.GetListOfProducts();
+            List<Category> categories = _eshop.GetListOfCategories();
+            List<Product> products = _eshop.GetListOfProducts();
 
             Product? product = products.Find(p => p.Id == productId);
             Category? category = categories.Find(c => c.Id == categoryId);
