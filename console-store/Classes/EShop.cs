@@ -1,14 +1,9 @@
-﻿using System.Text.Json;
-using ConsoleStore.Classes.Dto;
-using System;
-using System.Collections.Generic;
+﻿using ConsoleStore.Classes.Dto;
 
 namespace ConsoleStore.Classes
 {
     public class EShop
     {
-
-        //private List<Category> _categories = new List<Category>(JsonSerializer.Deserialize<List<Category>>(File.ReadAllText("categories.json")));
         private FileManager FileManager = new FileManager();
 
         private List<Product> _products = new List<Product>();

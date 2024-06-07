@@ -69,7 +69,7 @@ namespace ConsoleStore.Classes
             Console.WriteLine("N - NO");
             Console.WriteLine("Any button - SKIP");
 
-            string inputKey = Console.ReadLine().ToString();
+            string inputKey = Console.ReadLine().ToString().ToUpper();
 
             switch (inputKey)
             {
