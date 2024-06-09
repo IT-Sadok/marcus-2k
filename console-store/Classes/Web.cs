@@ -83,7 +83,8 @@ namespace ConsoleStore.Classes
                         {
                             int categoryId = int.Parse(Console.ReadLine());
 
-                            this.AddCategoryToProduct(productId, categoryId);
+
+                            this._eshop.AddCategoryToProduct(productId, categoryId);
                         }
                         catch (FormatException error)
                         {
@@ -95,26 +96,5 @@ namespace ConsoleStore.Classes
                 default: break;
             }
         }
-
-        public void AddCategoryToProduct(int productId, int categoryId)
-        {
-            List<Category> categories = _eshop.GetListOfCategories();
-            List<Product> products = _eshop.GetListOfProducts();
-
-            Product? product = products.Find(p => p.Id == productId);
-            Category? category = categories.Find(c => c.Id == categoryId);
-
-            if (product != null && category != null)
-            {
-                product.CategoryId = categoryId;
-                product.Category = category;
-                Console.WriteLine($"Product {product.Name}'s category updated to {categoryId}");
-            }
-            else
-            {
-                Console.WriteLine($"Product with ID {productId} not found.");
-            }
-        }
-
     }
 }

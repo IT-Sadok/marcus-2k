@@ -1,6 +1,6 @@
 ﻿namespace ConsoleStore.Classes.Dto
 {
-    public class InformationRes
+    public class OperationResult
     {
         public Product? Product { get; set; }
 

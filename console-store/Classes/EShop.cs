@@ -36,7 +36,7 @@ namespace ConsoleStore.Classes
         }
 
 
-        public InformationRes AddCategoryToProduct(int productId, int categoryId)
+        public OperationResult AddCategoryToProduct(int productId, int categoryId)
         {
             Product? product = _products.Find(p => p.Id == productId);
             Category? category = this.GetListOfCategories().Find(c => c.Id == categoryId);
@@ -46,7 +46,7 @@ namespace ConsoleStore.Classes
                 product.CategoryId = categoryId;
                 product.Category = category;
 
-                return new InformationRes
+                return new OperationResult
                 {
                     Product = product,
                     Message = $"Product {product.Name}'s category updated to {categoryId}"
@@ -54,7 +54,7 @@ namespace ConsoleStore.Classes
             }
 
 
-            return new InformationRes
+            return new OperationResult
             {
                 Product = null,
                 Message = $"Product with ID {productId} not found."
