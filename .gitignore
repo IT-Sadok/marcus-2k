@@ -1,5 +1,5 @@
-.vs/*
+**/.vs
 
-console-store/bin
+**/bin
 
-console-store/obj
+**/obj
