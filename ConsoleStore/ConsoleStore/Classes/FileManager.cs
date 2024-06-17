@@ -11,11 +11,9 @@ namespace ConsoleStore.Classes
     {
         private static string PathToFile { get; } = "categories.json";
 
-        private List<Category> _categories = new List<Category>(JsonSerializer.Deserialize<List<Category>>(File.ReadAllText(PathToFile)))!;
-
         public List<Category> GetListOfCategories()
         {
-            return this._categories;
+            return new List<Category>(JsonSerializer.Deserialize<List<Category>>(File.ReadAllText(PathToFile)));
         }
     }
 }
