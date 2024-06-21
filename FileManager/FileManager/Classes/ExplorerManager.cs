@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 
 namespace FileManager.Classes
 {
@@ -30,8 +25,7 @@ namespace FileManager.Classes
 
             return filePaths;
         }
-
-        public async Task<Dictionary<string, object>?> ParseJsonFileAsync(string filePath)
+        public async Task<object?> ParseJsonFileAsync(string filePath, HashSet<string> uniqueKeys)
         {
             try
             {
@@ -40,11 +34,26 @@ namespace FileManager.Classes
                 {
                     PropertyNameCaseInsensitive = true
                 };
-                return await JsonSerializer.DeserializeAsync<Dictionary<string, object>>(openStream, jsonSerializerOptions);
+
+                var parsedData = await JsonSerializer.DeserializeAsync<object>(openStream, jsonSerializerOptions);
+
+                if (parsedData is JsonElement jsonElement)
+                {
+                    if (jsonElement.ValueKind == JsonValueKind.Object)
+                    {
+                        foreach (JsonProperty property in jsonElement.EnumerateObject())
+                        {
+                            uniqueKeys.Add(property.Name);
+                        }
+                    }
+                }
+
+                return parsedData;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"An error occurred while parsing {filePath}: {ex.Message}");
+
                 return null;
             }
         }
