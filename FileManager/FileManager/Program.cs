@@ -6,7 +6,7 @@ var manager = new ExplorerManager();
 
 List<string> filePaths = manager.GetAllFilePaths(FolderPath);
 
-List<Task<object?>> parserTasks = new List<Task<object?>>();
+List<Task> parserTasks = new List<Task>();
 
 HashSet<string> uniqueKeys = new HashSet<string>();
 

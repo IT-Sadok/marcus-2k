@@ -4,6 +4,9 @@ namespace FileManager.Classes
 {
     public class ExplorerManager
     {
+
+        private static SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+
         public List<string> GetAllFilePaths(string folderPath)
         {
 
@@ -25,7 +28,7 @@ namespace FileManager.Classes
 
             return filePaths;
         }
-        public async Task<object?> ParseJsonFileAsync(string filePath, HashSet<string> uniqueKeys)
+        public async Task ParseJsonFileAsync(string filePath, HashSet<string> uniqueKeys)
         {
             try
             {
@@ -37,24 +40,31 @@ namespace FileManager.Classes
 
                 var parsedData = await JsonSerializer.DeserializeAsync<object>(openStream, jsonSerializerOptions);
 
+
+
                 if (parsedData is JsonElement jsonElement)
                 {
                     if (jsonElement.ValueKind == JsonValueKind.Object)
                     {
-                        foreach (JsonProperty property in jsonElement.EnumerateObject())
+
+                        await _semaphore.WaitAsync();
+                        try
                         {
-                            uniqueKeys.Add(property.Name);
+                            foreach (JsonProperty property in jsonElement.EnumerateObject())
+                            {
+                                uniqueKeys.Add(property.Name);
+                            }
+                        }
+                        finally
+                        {
+                            _semaphore.Release();
                         }
                     }
                 }
-
-                return parsedData;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"An error occurred while parsing {filePath}: {ex.Message}");
-
-                return null;
             }
         }
     }
