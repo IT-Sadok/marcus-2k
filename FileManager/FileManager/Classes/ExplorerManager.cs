@@ -8,8 +8,6 @@ namespace FileManager.Classes
 
         private static SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
-        private Object dublicateKey = new Object();
-
         public List<string> GetAllFilePaths(string folderPath)
         {
 
