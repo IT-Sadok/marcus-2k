@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Collections.Concurrent;
+using System.Text.Json;
 
 namespace FileManager.Classes
 {
@@ -6,6 +7,8 @@ namespace FileManager.Classes
     {
 
         private static SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+
+        private Object dublicateKey = new Object();
 
         public List<string> GetAllFilePaths(string folderPath)
         {
@@ -28,7 +31,7 @@ namespace FileManager.Classes
 
             return filePaths;
         }
-        public async Task ParseJsonFileAsync(string filePath, HashSet<string> uniqueKeys)
+        public async Task ParseJsonFileAsync(string filePath, HashSet<string> uniqueKeys, ConcurrentDictionary<string, int> keyCounts)
         {
             try
             {
@@ -52,6 +55,8 @@ namespace FileManager.Classes
                         {
                             foreach (JsonProperty property in jsonElement.EnumerateObject())
                             {
+
+                                keyCounts.AddOrUpdate(property.Name, 1, (key, count) => count + 1);
                                 uniqueKeys.Add(property.Name);
                             }
                         }
