@@ -7,7 +7,7 @@ var manager = new ExplorerManager();
 
 List<string> filePaths = manager.GetAllFilePaths(FolderPath);
 
-List<Task> parserTasks = new List<Task>();
+List<Task<Dictionary<string, string>>> parserTasks = new List<Task<Dictionary<string, string>>>();
 
 HashSet<string> uniqueKeys = new HashSet<string>();
 
@@ -18,7 +18,22 @@ foreach (string filePath in filePaths)
     parserTasks.Add(manager.ParseJsonFileAsync(filePath, uniqueKeys, keyCounts));
 }
 
-await Task.WhenAll(parserTasks);
+var result = await Task.WhenAll(parserTasks);
+
+var allKeyValuePairs = result.SelectMany(dict => dict);
+
+var groupedKeys = allKeyValuePairs
+    .GroupBy(pair => pair.Key)
+  .ToDictionary(
+        group => group.Key,
+        group => group.Select(pair => pair.Value).ToArray()
+    );
+
+foreach (var groupedKey in groupedKeys)
+{
+    Console.WriteLine($"{groupedKey.Key}: {String.Join(", ", groupedKey.Value)}");
+}
+
 
 Console.WriteLine($"Number of unique keys: {uniqueKeys.Count}");
 

@@ -29,8 +29,10 @@ namespace FileManager.Classes
 
             return filePaths;
         }
-        public async Task ParseJsonFileAsync(string filePath, HashSet<string> uniqueKeys, ConcurrentDictionary<string, int> keyCounts)
+        public async Task<Dictionary<string, string>> ParseJsonFileAsync(string filePath, HashSet<string> uniqueKeys, ConcurrentDictionary<string, int> keyCounts)
         {
+            var keyValuePairs = new Dictionary<string, string>();
+
             try
             {
                 using FileStream openStream = File.OpenRead(filePath);
@@ -40,8 +42,6 @@ namespace FileManager.Classes
                 };
 
                 var parsedData = await JsonSerializer.DeserializeAsync<object>(openStream, jsonSerializerOptions);
-
-
 
                 if (parsedData is JsonElement jsonElement)
                 {
@@ -56,6 +56,7 @@ namespace FileManager.Classes
 
                                 keyCounts.AddOrUpdate(property.Name, 1, (key, count) => count + 1);
                                 uniqueKeys.Add(property.Name);
+                                keyValuePairs[property.Name] = property.Value.GetString() ?? string.Empty;
                             }
                         }
                         finally
@@ -69,6 +70,8 @@ namespace FileManager.Classes
             {
                 Console.WriteLine($"An error occurred while parsing {filePath}: {ex.Message}");
             }
+
+            return keyValuePairs;
         }
     }
 }
