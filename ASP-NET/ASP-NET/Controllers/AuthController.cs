@@ -14,38 +14,50 @@ namespace ASP_NET.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
         private readonly IConfiguration _configuration;
+        private readonly IPasswordHasher<User> _passwordHasher;
 
-        public AuthController(ApplicationDbContext context, UserManager<User> userManager, IConfiguration configuration)
+
+        public AuthController(ApplicationDbContext context, UserManager<User> userManager, IConfiguration configuration, IPasswordHasher<User> passwordHasher)
         {
             _context = context;
             _userManager = userManager;
             _configuration = configuration;
+            _passwordHasher = passwordHasher;
         }
 
 
         [HttpPost("register")]
-        public async Task<ActionResult<User>> Register(RegisterDto request)
+        public async Task<ActionResult<ResultResponseDto>> Register(RegisterDto request)
         {
-            var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+            var existUser = await this._userManager.FindByNameAsync(request.Username);
 
+            if (existUser != null)
+            {
+                return Ok(new ResultResponseDto({
+                    Message = "The user already exists with this name",
+                    Success = false,
+                });
+            }
 
-            User user = new User { Email = request.Email, PasswordHash = passwordHash, UserName = request.Username };
+            var user = new User { Email = request.Email, UserName = request.Username };
+
+            user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);
 
             var result = await this._userManager.CreateAsync(user);
 
-            return Ok(user);
+            return Ok(new ResultResponseDto({
+                Message = "Successfully created",
+                Success = true,
+            }); ;
         }
 
 
         [HttpPost("login")]
         public async Task<ActionResult<ResultResponseDto>> Login(LoginDto request)
         {
-            Console.WriteLine(request.Email);
-
             var user = await this._userManager.FindByEmailAsync(request.Email);
 
             if (user == null)
@@ -57,11 +69,10 @@ namespace ASP_NET.Controllers
                 });
             }
 
-            bool passwordValid = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
+            bool passwordValid = await this._userManager.CheckPasswordAsync(user, request.Password);
 
             if (passwordValid == false)
             {
-
                 return Ok(new ResultResponseDto
                 {
                     Message = "Wrong Password",
@@ -76,7 +87,6 @@ namespace ASP_NET.Controllers
                     new Claim("Username", user.UserName),
                     new Claim(JwtRegisteredClaimNames.Jti,tokenId)
                 };
-
 
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
 
@@ -107,7 +117,6 @@ namespace ASP_NET.Controllers
                 Message = token,
                 Success = true
             });
-
         }
     }
 }
