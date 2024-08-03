@@ -36,7 +36,8 @@ namespace ASP_NET.Controllers
 
             if (existUser != null)
             {
-                return Ok(new ResultResponseDto({
+                return Ok(new ResultResponseDto
+                {
                     Message = "The user already exists with this name",
                     Success = false,
                 });
@@ -48,10 +49,11 @@ namespace ASP_NET.Controllers
 
             var result = await this._userManager.CreateAsync(user);
 
-            return Ok(new ResultResponseDto({
+            return Ok(new ResultResponseDto
+            {
                 Message = "Successfully created",
                 Success = true,
-            }); ;
+            });
         }
 
 
