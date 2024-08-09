@@ -1,12 +1,9 @@
-﻿using ASP_NET.Context;
-using ASP_NET.Dto;
+﻿using ASP_NET.Dto;
 using ASP_NET.Entities;
+using ASP_NET.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 
 namespace ASP_NET.Controllers
 {
@@ -14,20 +11,18 @@ namespace ASP_NET.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IAuthService _service;
+        private readonly IUserService _userService;
+
         private readonly UserManager<User> _userManager;
-        private readonly IConfiguration _configuration;
-        private readonly IPasswordHasher<User> _passwordHasher;
 
-
-        public AuthController(ApplicationDbContext context, UserManager<User> userManager, IConfiguration configuration, IPasswordHasher<User> passwordHasher)
+        public AuthController(UserManager<User> userManager, IAuthService service, IUserService userService)
         {
-            _context = context;
-            _userManager = userManager;
-            _configuration = configuration;
-            _passwordHasher = passwordHasher;
-        }
+            this._service = service;
+            this._userService = userService;
 
+            this._userManager = userManager;
+        }
 
         [HttpPost("register")]
         public async Task<ActionResult<ResultResponseDto>> Register(RegisterDto request)
@@ -43,11 +38,7 @@ namespace ASP_NET.Controllers
                 });
             }
 
-            var user = new User { Email = request.Email, UserName = request.Username };
-
-            user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);
-
-            var result = await this._userManager.CreateAsync(user);
+            var user = await this._userService.CreateUser(request);
 
             return Ok(new ResultResponseDto
             {
@@ -60,65 +51,48 @@ namespace ASP_NET.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<ResultResponseDto>> Login(LoginDto request)
         {
-            var user = await this._userManager.FindByEmailAsync(request.Email);
-
-            if (user == null)
+            try
             {
-                return Ok(new ResultResponseDto
+                var user = await this._userManager.FindByEmailAsync(request.Email);
+
+                if (user == null)
                 {
-                    Message = "User does not exist",
-                    Success = false
-                });
-            }
+                    return Ok(new ResultResponseDto
+                    {
+                        Message = "User does not exist",
+                        Success = false
+                    });
+                }
 
-            bool passwordValid = await this._userManager.CheckPasswordAsync(user, request.Password);
+                bool passwordValid = await this._userManager.CheckPasswordAsync(user, request.Password);
 
-            if (passwordValid == false)
-            {
-                return Ok(new ResultResponseDto
+                if (passwordValid == false)
                 {
-                    Message = "Wrong Password",
-                    Success = false
-                });
-            }
+                    return Ok(new ResultResponseDto
+                    {
+                        Message = "Wrong Password",
+                        Success = false
+                    });
+                }
 
-            var tokenId = Guid.NewGuid().ToString();
-
-            var authClaims = new[]
+                var authClaims = new[]
                 {
-                    new Claim("Username", user.UserName),
-                    new Claim(JwtRegisteredClaimNames.Jti,tokenId)
+                  new Claim("UserId", user.Id),
+                  new Claim("Username", user.UserName)
                 };
 
-            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+                var token = this._service.GenerateJwtToken(authClaims);
 
-            var tokenData = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
-                expires: DateTime.Now.AddHours(3),
-                claims: authClaims,
-                signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-            );
-
-            var token = new JwtSecurityTokenHandler().WriteToken(tokenData);
-
-            var tokenEntity = new IdentityUserToken<string>
+                return Ok(new ResultResponseDto
+                {
+                    Message = token,
+                    Success = true
+                });
+            }
+            catch (Exception error)
             {
-                UserId = user.Id,
-                LoginProvider = "JWT",
-                Name = "Token",
-                Value = token
-            };
-
-            _context.Tokens.Add(tokenEntity);
-
-            await _context.SaveChangesAsync();
-
-            return Ok(new ResultResponseDto
-            {
-                Message = token,
-                Success = true
-            });
+                return BadRequest(error.Message);
+            }
         }
     }
 }
