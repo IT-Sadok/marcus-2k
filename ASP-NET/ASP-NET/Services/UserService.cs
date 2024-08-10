@@ -7,12 +7,10 @@ namespace ASP_NET.Services;
 public class UserService : IUserService
 {
     private readonly UserManager<User> _userManager;
-    private readonly IPasswordHasher<User> _passwordHasher;
 
-    public UserService(UserManager<User> userManager, IPasswordHasher<User> passwordHasher)
+    public UserService(UserManager<User> userManager)
     {
         this._userManager = userManager;
-        this._passwordHasher = passwordHasher;
     }
 
     public async Task<User> CreateUser(RegisterDto dto)
@@ -20,9 +18,7 @@ public class UserService : IUserService
 
         var user = new User { Email = dto.Email, UserName = dto.Username };
 
-        user.PasswordHash = _passwordHasher.HashPassword(user, dto.Password);
-
-        await this._userManager.CreateAsync(user);
+        await this._userManager.CreateAsync(user, dto.Password);
 
         return user;
     }
@@ -32,4 +28,3 @@ public interface IUserService
 {
     Task<User> CreateUser(RegisterDto dto);
 }
-
