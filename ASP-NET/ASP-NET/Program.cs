@@ -1,3 +1,4 @@
+using ASP_NET.Classes;
 using ASP_NET.Context;
 using ASP_NET.Entities;
 using ASP_NET.Repositories;
@@ -17,6 +18,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IAzureBlobStorage, AzureBlobStorage>();
+builder.Services.AddScoped<IOptions, Options>();
 
 builder.Services.AddEndpointsApiExplorer();
 

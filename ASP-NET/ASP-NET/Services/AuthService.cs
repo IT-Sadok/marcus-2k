@@ -1,4 +1,5 @@
-﻿using ASP_NET.Dto;
+﻿using ASP_NET.Classes;
+using ASP_NET.Dto;
 using ASP_NET.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -10,12 +11,12 @@ namespace ASP_NET.Services;
 
 public class AuthService : IAuthService
 {
-    private readonly IConfiguration _configuration;
+    private readonly IOptions _configuration;
 
     private readonly IUserService _userService;
     private readonly UserManager<User> _userManager;
 
-    public AuthService(IConfiguration configuration, UserManager<User> userManager, IUserService userService)
+    public AuthService(IOptions configuration, UserManager<User> userManager, IUserService userService)
     {
         this._configuration = configuration;
         this._userManager = userManager;
@@ -86,11 +87,11 @@ public class AuthService : IAuthService
 
     public string GenerateJwtToken(Claim[] claims)
     {
-        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.JwtKey));
 
         var tokenData = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Audience"],
+            issuer: _configuration.JwtIssuer,
+            audience: _configuration.JwtAudience,
             expires: DateTime.Now.AddHours(3),
             claims: claims,
             signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
