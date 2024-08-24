@@ -1,20 +1,20 @@
 ﻿using ASP_NET.Context;
 using ASP_NET.Dto;
 using ASP_NET.Entities;
+using ASP_NET.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
 
 namespace ASP_NET.Services;
 
 public class ProductService : IProductService
 {
     private readonly ApplicationDbContext _context;
+    private readonly IAzureBlobStorage _azureBlobStorage;
 
-    private const string PublicProductsPhotoFolder = "public/products";
-
-    public ProductService(ApplicationDbContext context)
+    public ProductService(ApplicationDbContext context, IAzureBlobStorage azureBlobStorage)
     {
         this._context = context;
+        this._azureBlobStorage = azureBlobStorage;
     }
 
     public async Task<ResultResponseDto> CreateProductAsync(CreateProductDto body)
@@ -25,23 +25,21 @@ public class ProductService : IProductService
             return new ResultResponseDto { Message = "Photo is required", Success = false };
         }
 
-        var uploadsFolder = Path.Combine(PublicProductsPhotoFolder);
+        string? uriToFile = null;
 
-        Directory.CreateDirectory(uploadsFolder);
+        var responseUpload = await this._azureBlobStorage.UploadFileToBlobStorageAsync(body.Photo);
 
-        var uniqueFileName = Guid.NewGuid().ToString() + "." + body.Photo.FileName.Split(".").Last();
-        var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-        using (var fileStream = new FileStream(filePath, FileMode.Create))
+        if (responseUpload.Success == true && responseUpload.Uri != null)
         {
-            await body.Photo.CopyToAsync(fileStream);
+            uriToFile = responseUpload.Uri;
+        }
+        else
+        {
+            return new ResultResponseDto { Success = false, Message = responseUpload.Message };
         }
 
         int Id = await _context.Products.CountAsync() + 1;
-        var product = new Product { Id = Id, Name = body.Title, Picture = uniqueFileName, Price = body.Price, StoreId = body.StoreId };
-
-        Console.WriteLine(product.ToString());
-        Console.WriteLine(JsonSerializer.Serialize(product));
+        var product = new Product { Id = Id, Name = body.Title, Picture = uriToFile, Price = body.Price, StoreId = body.StoreId };
 
         var result = await this.SaveProductToDatabaseAsync(product);
 

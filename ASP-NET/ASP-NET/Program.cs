@@ -1,5 +1,6 @@
 using ASP_NET.Context;
 using ASP_NET.Entities;
+using ASP_NET.Repositories;
 using ASP_NET.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -15,6 +16,7 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IAzureBlobStorage, AzureBlobStorage>();
 
 builder.Services.AddEndpointsApiExplorer();
 
