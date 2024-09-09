@@ -2,23 +2,25 @@
 using ASP_NET.Dto;
 using ASP_NET.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 
 namespace ASP_NET.Services;
 
 public class AuthService : IAuthService
 {
-    private readonly IOptions _configuration;
+    private readonly JwtOptions _configuration;
 
     private readonly IUserService _userService;
     private readonly UserManager<User> _userManager;
 
-    public AuthService(IOptions configuration, UserManager<User> userManager, IUserService userService)
+    public AuthService(IOptions<JwtOptions> configuration, UserManager<User> userManager, IUserService userService)
     {
-        this._configuration = configuration;
+        this._configuration = configuration.Value;
         this._userManager = userManager;
         this._userService = userService;
     }
@@ -76,6 +78,9 @@ public class AuthService : IAuthService
             new Claim("Username", user.UserName)
         };
 
+        Console.WriteLine("to string");
+        Console.WriteLine(JsonSerializer.Serialize(_configuration));
+
         var token = this.GenerateJwtToken(authClaims);
 
         return new ResultResponseDto
@@ -87,11 +92,11 @@ public class AuthService : IAuthService
 
     public string GenerateJwtToken(Claim[] claims)
     {
-        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.JwtKey));
+        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.Key));
 
         var tokenData = new JwtSecurityToken(
-            issuer: _configuration.JwtIssuer,
-            audience: _configuration.JwtAudience,
+            issuer: _configuration.Issuer,
+            audience: _configuration.Audience,
             expires: DateTime.Now.AddHours(3),
             claims: claims,
             signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
