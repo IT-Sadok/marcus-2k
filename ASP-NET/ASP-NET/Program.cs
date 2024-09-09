@@ -3,6 +3,7 @@ using ASP_NET.Context;
 using ASP_NET.Entities;
 using ASP_NET.Repositories;
 using ASP_NET.Services;
+using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
+
+builder.Services.AddSingleton(x =>
+    new BlobContainerClient(builder.Configuration["BlobConnectionString"],
+                            builder.Configuration["BlobContainerName"]));
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();

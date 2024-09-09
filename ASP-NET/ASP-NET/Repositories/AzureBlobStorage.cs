@@ -6,28 +6,21 @@ namespace ASP_NET.Repositories;
 
 public class AzureBlobStorage : IAzureBlobStorage
 {
-    private readonly IConfiguration _configuration;
 
-    private readonly string _storageConnectionString;
-    private readonly string _storageContainerName;
+    private readonly BlobContainerClient _blobContainerClient;
 
-    public AzureBlobStorage(IConfiguration configuration)
+    public AzureBlobStorage(BlobContainerClient blobContainerClient)
     {
-        _configuration = configuration;
-
-        this._storageConnectionString = configuration.GetValue<string>("BlobConnectionString");
-        this._storageContainerName = configuration.GetValue<string>("BlobContainerName");
+        _blobContainerClient = blobContainerClient;
     }
 
     public async Task<BlobResponseDto> UploadFileToBlobStorageAsync(IFormFile blob)
     {
         BlobResponseDto response = new();
 
-        BlobContainerClient container = new BlobContainerClient(_storageConnectionString, _storageContainerName);
-
         var uniqueFileName = Guid.NewGuid().ToString() + "." + blob.FileName.Split(".").Last();
 
-        BlobClient client = container.GetBlobClient(uniqueFileName);
+        BlobClient client = _blobContainerClient.GetBlobClient(uniqueFileName);
 
         try
         {
