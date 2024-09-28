@@ -1,9 +1,6 @@
 ﻿using ASP_NET.Dto;
-using ASP_NET.Entities;
 using ASP_NET.Services;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace ASP_NET.Controllers
 {
@@ -12,87 +9,27 @@ namespace ASP_NET.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _service;
-        private readonly IUserService _userService;
 
-        private readonly UserManager<User> _userManager;
-
-        public AuthController(UserManager<User> userManager, IAuthService service, IUserService userService)
+        public AuthController(IAuthService service)
         {
             this._service = service;
-            this._userService = userService;
-
-            this._userManager = userManager;
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<ResultResponseDto>> Register(RegisterDto request)
+        public async Task<ActionResult<ResultResponseDto>> RegisterAsync(RegisterDto requestBody)
         {
-            var existUser = await this._userManager.FindByNameAsync(request.Username);
+            var result = await this._service.RegisterAsync(requestBody);
 
-            if (existUser != null)
-            {
-                return Ok(new ResultResponseDto
-                {
-                    Message = "The user already exists with this name",
-                    Success = false,
-                });
-            }
-
-            var user = await this._userService.CreateUser(request);
-
-            return Ok(new ResultResponseDto
-            {
-                Message = "Successfully created",
-                Success = true,
-            });
+            return Ok(result);
         }
 
 
         [HttpPost("login")]
-        public async Task<ActionResult<ResultResponseDto>> Login(LoginDto request)
+        public async Task<ActionResult<ResultResponseDto>> Login(LoginDto requestBody)
         {
-            try
-            {
-                var user = await this._userManager.FindByEmailAsync(request.Email);
+            var result = await this._service.LoginAsync(requestBody);
 
-                if (user == null)
-                {
-                    return Ok(new ResultResponseDto
-                    {
-                        Message = "User does not exist",
-                        Success = false
-                    });
-                }
-
-                bool passwordValid = await this._userManager.CheckPasswordAsync(user, request.Password);
-
-                if (passwordValid == false)
-                {
-                    return Ok(new ResultResponseDto
-                    {
-                        Message = "Wrong Password",
-                        Success = false
-                    });
-                }
-
-                var authClaims = new[]
-                {
-                  new Claim("UserId", user.Id),
-                  new Claim("Username", user.UserName)
-                };
-
-                var token = this._service.GenerateJwtToken(authClaims);
-
-                return Ok(new ResultResponseDto
-                {
-                    Message = token,
-                    Success = true
-                });
-            }
-            catch (Exception error)
-            {
-                return BadRequest(error.Message);
-            }
+            return Ok(result);
         }
     }
 }

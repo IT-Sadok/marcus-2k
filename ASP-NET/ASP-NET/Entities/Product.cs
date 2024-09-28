@@ -11,6 +11,9 @@ namespace ASP_NET.Entities
         public string Name { get; set; } = String.Empty;
 
         [Required]
+        public string Picture { get; set; } = String.Empty;
+
+        [Required]
         public decimal Price { get; set; }
 
         [Required]
